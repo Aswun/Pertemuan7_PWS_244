@@ -15,7 +15,8 @@ const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '', // sesuaikan dengan konfigurasi MySQL kamu
-  database: 'apikey_db'
+  database: 'api_p7',
+  port: 3307
 });
 
 db.connect(err => {
