@@ -14,7 +14,7 @@ app.use(express.json()); // agar bisa baca JSON body dari fetch()
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '', // sesuaikan dengan konfigurasi MySQL kamu
+  password: 'Bil1o8775', // sesuaikan dengan konfigurasi MySQL kamu
   database: 'api_p7',
   port: 3307
 });
