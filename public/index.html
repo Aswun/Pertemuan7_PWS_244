@@ -11,10 +11,10 @@
   <div class="bg-white/10 backdrop-blur-lg rounded-2xl shadow-xl w-full max-w-md p-8 text-white">
     <h1 class="text-2xl font-bold mb-4 text-center">🔑 Generate API Key</h1>
     <p class="text-sm text-gray-300 mb-6 text-center">
-      Masukkan detail untuk membuat API key unik Anda.
+      Masukkan detail Anda untuk membuat API key unik.
     </p>
 
-    <form id="apiKeyForm" class="space-y-4">
+    <form id="apiKeyForm" class="space-y-4" onsubmit="return false;">
       <div>
         <label for="username" class="block text-sm font-medium mb-1">Nama Pengguna</label>
         <input type="text" id="username" name="username" placeholder="contoh: aswin_dev"
@@ -41,31 +41,54 @@
         Salin
       </button>
     </div>
+
+    <div id="loading" class="hidden mt-4 text-center text-sm text-gray-400 animate-pulse">
+      ⏳ Sedang membuat API key...
+    </div>
   </div>
 
   <script>
-    function generateApiKey() {
+    async function generateApiKey() {
       const username = document.getElementById("username").value.trim();
       const email = document.getElementById("email").value.trim();
+      const loading = document.getElementById("loading");
+      const resultBox = document.getElementById("result");
+      const display = document.getElementById("apiKeyDisplay");
 
       if (!username || !email) {
         alert("Harap isi semua field terlebih dahulu.");
         return;
       }
 
-      // Membuat API key acak
-      const randomPart = Math.random().toString(36).substring(2, 10).toUpperCase();
-      const timestamp = Date.now().toString(36).toUpperCase();
-      const apiKey = `${username.substring(0,3).toUpperCase()}-${randomPart}-${timestamp}`;
+      loading.classList.remove("hidden");
+      resultBox.classList.add("hidden");
 
-      document.getElementById("apiKeyDisplay").textContent = apiKey;
-      document.getElementById("result").classList.remove("hidden");
+      try {
+        const response = await fetch("/generate-key", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ username, email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.apiKey) {
+          display.textContent = data.apiKey;
+          resultBox.classList.remove("hidden");
+        } else {
+          alert(data.error || "Terjadi kesalahan saat membuat API key.");
+        }
+      } catch (err) {
+        alert("Gagal menghubungi server. Pastikan server sedang berjalan.");
+      } finally {
+        loading.classList.add("hidden");
+      }
     }
 
     function copyKey() {
       const key = document.getElementById("apiKeyDisplay").textContent;
       navigator.clipboard.writeText(key);
-      alert("API Key berhasil disalin!");
+      alert("API Key berhasil disalin ke clipboard!");
     }
   </script>
 
